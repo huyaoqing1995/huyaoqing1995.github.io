@@ -2,52 +2,84 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <title>测试跳转到 NewHomeActivity</title>
+    <title>测试跳转到 App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         body {
           font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           padding: 24px;
         }
-        button {
-          padding: 12px 20px;
+        input {
+          padding: 8px;
           font-size: 16px;
-          border-radius: 8px;
+          width: 300px;
+          margin-right: 8px;
+        }
+        button {
+          padding: 10px 16px;
+          font-size: 16px;
+          border-radius: 6px;
           border: none;
           cursor: pointer;
+        }
+        p {
+          margin-top: 16px;
         }
     </style>
 </head>
 <body>
-<h2>测试跳转到 App 首页</h2>
+<h2>测试通过用户输入 Scheme 打开 App</h2>
 
-<!-- 纯 a 标签方式 -->
+<!-- 用户输入 scheme / URL -->
 <p>
-    <a id="schemeLink" href="#">
-        <button>通过自定义 Scheme 打开 App</button>
-    </a>
+    <input type="text" id="schemeInput" placeholder="输入 scheme 或完整 URL，例如 mingdao://..." />
+    <button onclick="openApp()">打开 App</button>
 </p>
 
-<!-- 也可以用 JS 方式 -->
 <p>
-    <button onclick="openAppByJs()">JS 调用打开 App（location.href）</button>
+    <button onclick="openAppByA()">通过 a 标签打开 App</button>
+</p>
+
+<!-- a 标签占位 -->
+<p>
+    <a id="schemeLink" href="#"><button>通过 a 标签跳转</button></a>
 </p>
 
 <script>
-    // 把这里的 scheme 改成你 manifestPlaceholders 中实际的值
-    // 例如：const SCHEME = 'mingdaoPush';
-    const SCHEME = 'https'; // TODO: 替换成真实值
+    // JS 打开 App
+    function openApp() {
+        const userInput = document.getElementById('schemeInput').value.trim();
+        if (!userInput) {
+            alert('请输入 scheme 或完整 URL');
+            return;
+        }
 
-    // 和 manifest 对应的完整 URL：
-    // const DEEP_LINK = 'https://huyaoqing1995.github.io/home_page';
-    const DEEP_LINK = 'mingdao://ssocallback/access_token=XX&refresh_token=XXX&expire_in=XXX'
+        // 如果用户只输入了 scheme，可以拼接默认 path
+        let url = userInput;
+        if (!userInput.includes('://')) {
+            url = userInput + '://ssocallback/access_token=XX&refresh_token=XXX&expire_in=XXX';
+        }
 
-    // 设置到 a 标签上，方便直接点
-    document.getElementById('schemeLink').href = DEEP_LINK;
+        console.log('跳转 URL:', url);
+        window.location.href = url;
+    }
 
-    // JS 打开方式
-    function openAppByJs() {
-      window.location.href = DEEP_LINK;
+    // a 标签方式动态设置 href
+    function openAppByA() {
+        const userInput = document.getElementById('schemeInput').value.trim();
+        if (!userInput) {
+            alert('请输入 scheme 或完整 URL');
+            return;
+        }
+
+        let url = userInput;
+        if (!userInput.includes('://')) {
+            url = userInput + '://ssocallback/access_token=XX&refresh_token=XXX&expire_in=XXX';
+        }
+
+        const link = document.getElementById('schemeLink');
+        link.href = url;
+        link.click();
     }
 </script>
 </body>
